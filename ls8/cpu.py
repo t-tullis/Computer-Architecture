@@ -72,7 +72,10 @@ class CPU:
         """Run the CPU."""
         on = True
 
+        # Instructions
+        HLT = 0b00000001
         LDI = 0b10000010
+        PRN = 0b01000111
         
         while on:
             IR = self.ram[self.pc]
@@ -81,5 +84,26 @@ class CPU:
             operand_1 = self.ram_read(self.pc + 1)
             operand_2 = self.ram_read(self.pc + 2)
 
-            # if IR == LDI
+            if IR > 0b01111111:
+                # Check LDI instruction
+                if IR == LDI:
+                    self.reg[operand_1] = operand_2
+                # requires 2 operands if 64 or higher, so we add 3 to make the current instruction the one after all operands involved.
+                self.pc += 3
+
+            # single operand
+            elif IR < 0b01111111 and IR > 0b00111111:
+                if IR == PRN:
+                    print(self.reg[operand_1])
+                
+                self.pc += 2
+
+            else:
+                if IR == HLT:
+                    on = False
+                    break
+                
+                self.pc += 1
+
+                    
 
