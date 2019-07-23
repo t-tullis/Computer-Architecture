@@ -17,19 +17,6 @@ class CPU:
 
         address = 0
 
-        # For now, we've just hardcoded a program:
-
-        # program = [
-        #     # From print8.ls8
-        #     0b10000010,  # LDI R0,8
-        #     0b00000000,
-        #     0b00001000,
-        #     0b01000111,  # PRN R0
-        #     0b00000000,
-        #     0b00000001,  # HLT
-        # ]
-
-        program = []
         lines = None
         try:
             lines = open(sys.argv[1]).readlines()
@@ -85,6 +72,7 @@ class CPU:
         HLT = 0b00000001
         LDI = 0b10000010
         PRN = 0b01000111
+        MUL = 0b10100010
 
         while on:
             IR = self.ram[self.pc]
@@ -97,6 +85,10 @@ class CPU:
                 # Check LDI instruction
                 if IR == LDI:
                     self.reg[operand_1] = operand_2
+
+                if IR == MUL:
+                    self.reg[operand_1] = self.reg[operand_1] * self.reg[operand_2]
+
                 # requires 2 operands if 64 or higher, so we add 3 to make the current instruction the one after all operands involved.
                 self.pc += 3
 
