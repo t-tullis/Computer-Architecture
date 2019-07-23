@@ -24,13 +24,25 @@ class CPU:
 
         program = [
             # From print8.ls8
-            0b10000010, # LDI R0,8
-            0b00000000,
-            0b00001000,
-            0b01000111, # PRN R0
-            0b00000000,
-            0b00000001, # HLT
+            # 0b10000010, # LDI R0,8
+            # 0b00000000,
+            # 0b00001000,
+            # 0b01000111, # PRN R0
+            # 0b00000000,
+            # 0b00000001, # HLT
         ]
+        
+        with open(sys.argv[1]) as file:
+            for line in file:
+                instruction = line.split('#', 1)[0]
+                if instruction.strip() == '':
+                    continue
+                
+                program.append(int(instruction, 2))
+            print(program)
+        
+
+
 
         for instruction in program:
             self.ram[address] = instruction
@@ -48,7 +60,7 @@ class CPU:
         """ALU operations."""
 
         if op == "ADD":
-            self.reg[reg_a] += self.reg[reg_b]
+            self.register[reg_a] += self.register[reg_b]
         #elif op == "SUB": etc
         else:
             raise Exception("Unsupported ALU operation")
@@ -85,6 +97,10 @@ class CPU:
         LDI = 0b10000010
         #Print to the console the decimal integer value that is stored in the given register.
         PRN = 0b01000111
+        #Multiply the values in two registers together and store the result in registerA.
+        MUL = 0b10100010
+
+
 
         while running:
 
@@ -105,7 +121,13 @@ class CPU:
             elif IR == LDI:
                 self.register[operand_a] = operand_b
                 self.pc += 3
-            
+
+            #Else if Instruction Register == MUL in register[operand_a(8)]. 
+            #multiply self.register[operand_a(8)] * self.register[operand_b(9)] == 72
+            elif IR == MUL:
+                self.register[operand_a] = self.register[operand_a] * self.register[operand_b]
+                self.pc += 3
+    
             #Else if Instruction Register == PRN print to the console the decimal integer value of  register[operand_a]
             elif IR == PRN:
                 print(self.register[operand_a])
@@ -113,6 +135,4 @@ class CPU:
 
             else:
                 print(f"Command {IR} Not Found")
-        
-
-
+                sys.exit()
