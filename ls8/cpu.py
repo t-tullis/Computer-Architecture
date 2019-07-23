@@ -8,7 +8,7 @@ class CPU:
     def __init__(self):
         """Construct a new CPU."""
         # hold 256 bytes of memory
-        self.ram = [00000000] * 256
+        self.ram = [0] * 256
         #8 general-purpose registers.
         self.register = [0] * 8
         #Program Counter
@@ -91,8 +91,28 @@ class CPU:
             IR = self.ram[self.pc]
 
             # get next two MDR's from the next two MAR's stored in ram incase instructions need it
+            #Argument 1
             operand_a = self.ram_read(self.pc + 1)
+            #Argument2
             operand_b = self.ram_read(self.pc + 2)
 
+            #If Insturction Register == HLT exit the emulator, turning true to false and move to next instruction
+            if IR == HLT:
+                running = False
+                self.pc += 1
+
+            #Else if Instruction Register == LDI Set the value of a register[operand_a] to a operand_b/integer. 
+            elif IR == LDI:
+                self.register[operand_a] = operand_b
+                self.pc += 3
             
+            #Else if Instruction Register == PRN print to the console the decimal integer value of  register[operand_a]
+            elif IR == PRN:
+                print(self.register[operand_a])
+                self.pc += 2
+
+            else:
+                print(f"Command {IR} Not Found")
+        
+
 
