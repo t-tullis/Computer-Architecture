@@ -13,6 +13,7 @@ class CPU:
         self.register = [0] * 8
         #Program Counter
         self.pc = 0
+
     
 
     def load(self):
@@ -99,7 +100,12 @@ class CPU:
         PRN = 0b01000111
         #Multiply the values in two registers together and store the result in registerA.
         MUL = 0b10100010
-
+        #Push the value in the given register on the stack.
+        PUSH = 0b01000101
+        #Pop the value at the top of the stack into the given register.
+        POP = 0b01000110
+        #Stack Pointer Register
+        SP = self.register[7] = 0xF4
 
 
         while running:
@@ -132,7 +138,17 @@ class CPU:
             elif IR == PRN:
                 print(self.register[operand_a])
                 self.pc += 2
-
+            
+            elif IR == PUSH:
+                SP -= 1
+                value = self.register[operand_a]
+                self.ram[SP] = value
+                self.pc += 2
+            
+            elif IR == POP:
+                self.register[operand_a] = self.ram[SP]
+                SP += 1
+                self.pc += 2
             else:
                 print(f"Command {IR} Not Found")
                 sys.exit()
