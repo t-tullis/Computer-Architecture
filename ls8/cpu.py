@@ -18,6 +18,8 @@ class CPU:
         self.branchtable[0b01000111] = self.handlePRN
         self.branchtable[0b01000101] = self.handleStackPush
         self.branchtable[0b01000110] = self.handleStackPop
+        self.branchtable[0b01010000] = self.handleCALL
+        self.branchtable[0b00010001] = self.handleRET
 
     def load(self):
         """Load a program into memory."""
@@ -101,6 +103,20 @@ class CPU:
         ram_value = self.ram[self.sp]
         self.reg[operand_1] = ram_value
         self.sp += 1
+
+    def handleCALL(self, operand_1):
+        return_address = self.pc + 2
+
+        self.reg[self.sp] -= 1
+        self.ram[self.reg[self.sp]] = return_address
+
+        reg_num = self.ram[self.pc + 1]
+        subroutine_address = self.reg[reg_num]
+        self.pc = subroutine_address
+
+    def handleRET(self):
+        return_value = self.ram[self.sp]
+        return return_value
 
     def run(self):
         """Run the CPU."""
