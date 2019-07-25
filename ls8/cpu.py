@@ -14,6 +14,8 @@ class CPU:
         #Program Counter
         self.pc = 0
 
+        self.register[7] = 0xF4
+
     
 
     def load(self):
@@ -104,8 +106,14 @@ class CPU:
         PUSH = 0b01000101
         #Pop the value at the top of the stack into the given register.
         POP = 0b01000110
+        #Calls a subroutine (function) at the address stored in the register.
+        CALL = 0b01010000
+        #Pop the value from the top of the stack and store it in the `PC`.
+        RET = 0b00010001
+        #Jump to the address stored in the given register.
+        JMP = 0b01010100
         #Stack Pointer Register
-        SP = self.register[7] = 0xF4
+        SP = self.register[7]
 
 
         while running:
@@ -149,6 +157,24 @@ class CPU:
                 self.register[operand_a] = self.ram[SP]
                 SP += 1
                 self.pc += 2
+
+            elif IR == CALL:
+                return_address = operand_b
+                
+                SP -= 1
+                self.ram[SP] = return_address
+
+                register_num = self.ram[operand_a]
+                subroutine_address = self.register[register_num]
+                
+                self.pc = subroutine_address
+            
+            elif IR == RET:
+                return_address = self.ram[SP]
+                SP += 1
+
+                self.pc = return_address
+            
             else:
                 print(f"Command {IR} Not Found")
                 sys.exit()
